@@ -39,29 +39,30 @@ class BMA423:
     # 2G, 4G, 8G and 16G. If we want to be able to measure higher
     # max accelerations, the relative precision decreases as we have
     # a fixed 12 bit reading.
-    def __init__(self,i2c,*,acc_range=2):
+    def __init__(self,i2c,*,addr=None, acc_range=2):
         default_addr = [0x18,0x19] # Changes depending on SDO pin
                                    # pulled to ground or V+
         self.i2c = i2c
-        self.myaddr = None
+        self.myaddr = addr
         self.features_in = bytearray(FEATURES_IN_SIZE)
 
-        found_devices = i2c.scan()
-        print("BMA423: scan i2c bus:", [hex(x) for x in found_devices])
-        for addr in default_addr:
-            if addr in found_devices:
-                self.myaddr = addr
-                break
+        if addr is None:
+            found_devices = i2c.scan()
+            print("BMA423: scan i2c bus:", [hex(x) for x in found_devices])
+            for addr in default_addr:
+                if addr in found_devices:
+                    self.myaddr = addr
+                    print("BMA423: device with matching address found at",hex(self.myaddr))
+                    break
+
         if self.myaddr == None:
             raise Exception("BMA423 not found at i2c bus")
-        print("BMA423: device with matching address found at",hex(self.myaddr))
 
         # Device initialization.
         self.reset()
         chip_id = self.get_reg(REG_CHIP_ID)
         if chip_id != 0x13:
             raise Exception("BMA423 chip ID is not 0x13 as expected. Different sensor connected?")
-        print("BMA423: chip correctly identified.")
 
         # Set default parameters. By default we enable the accelerometer
         # so that the user can read the acceleration vector from the
