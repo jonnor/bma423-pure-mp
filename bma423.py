@@ -29,6 +29,9 @@ REG_INT1_MAP = const(0x56)  # Interrput map for detected features and pin1.
 REG_INT2_MAP = const(0x57)  # Interrput map for detected features and pin2.
 REG_INT_MAP_DATA = const(0x58) # Interrupt map for pin1/2 data events.
 REG_INIT_CTRL = const(0x59) # Initialization register.
+REG_FIFO_LENGTH_0 = const(0x24) # FIFO level LSB. MSB follows
+REG_FIFO_CONFIG_1 = const(0x49) # FIFO configuration
+REG_FIFO_DATA = const(0x26) # FIFO data. For burst reads
 FEATURES_IN_SIZE = const(70) # Size of the features configuration area
 
 # Commands for the REG_CMD register
@@ -333,6 +336,32 @@ class BMA423:
 
         if len(data) == None: return
         self.callback(data)
+
+    # empty the FIFO
+    def fifo_clear(self):
+        self.set_reg(REG_CMD, 0xb0)
+        # TODO, check cmd_rdy in STATUS, and cmd_err in ERR_REG
+
+    # enable the FIFO
+    def fifo_enable(self):
+        # NOTE: only accelerometer supported, not aux
+        fifo_acc_en = 6
+        fifo_header_en = 4
+        val = self.get_reg(REG_FIFO_CONFIG_1)
+        val |= (1<<fifo_acc_en)
+        val &= ~(1<<fifo_header_en)
+        self.set_reg(REG_FIFO_CONFIG_1, val)
+
+    # read the raw bytes in the FIFO
+    # can be decoded afterwards
+    def fifo_read(self, buffer):
+        self.i2c.readfrom_mem_into(self.myaddr, REG_FIFO_DATA, buffer)
+
+    # Get number of bytes in the FIFO
+    def fifo_level(self):
+        values = self.get_reg(REG_FIFO_LENGTH_0, count=2)
+        watermark = (values[1] << 8) + values[0]
+        return watermark
 
     # Return the single byte at the specified register
     def get_reg(self, register, count=1):
