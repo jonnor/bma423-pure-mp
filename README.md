@@ -15,12 +15,24 @@ The driver also supports using the FIFO of the BMA423 for accelerometer data.
 Compared to polling in MicroPython for each individual sample,
 this reduces jitter in the sampling and is more CPU/power efficient.
 
-## Usage
+## Credits
+
+This code was predominantly written by [antirez](https://github.com/antirez).
+
+## Installing via mip
+
+```
+mpremote mip install github:jonnor/bma423-pure-mp
+```
+
+## Installing from local git checkout
 
 Transfer files to the device. Note that **:** at the end is needed, or
 mpremote does a mess and will copy all the files to the last file name.
 
     mpremote cp bma423.py bma423conf.bin :
+
+## Usage
 
 Then upload an example as `main.py` like this:
 
