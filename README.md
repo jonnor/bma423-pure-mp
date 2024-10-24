@@ -11,6 +11,10 @@ Right now **this is just a work in progress**, even if it works in the base
 case and to enable the step counter. More work is needed in order to support
 interrupts, to provide a cleaner API, documentation and a few examples.
 
+The driver also supports using the FIFO of the BMA423 for accelerometer data.
+Compared to polling in MicroPython for each individual sample,
+this reduces jitter in the sampling and is more CPU/power efficient.
+
 ## Usage
 
 Transfer files to the device. Note that **:** at the end is needed, or
