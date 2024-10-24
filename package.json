@@ -1,0 +1,9 @@
+{
+  "urls": [
+    ["bma423.py", "github:jonnor/bma423-pure-mp/bma423.py"],
+    ["bma423conf.bin", "github:jonnor/bma423-pure-mp/bma423conf.bin"]
+  ],
+  "deps": [
+  ],
+  "version": "0.1"
+}
